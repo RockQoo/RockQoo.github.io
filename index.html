@@ -98,6 +98,9 @@
   }
   .link-item a { font-family: "IBM Plex Mono", monospace; font-size: 13px; text-decoration: none; border-bottom: 1px solid var(--accent-line); }
   .link-item a:hover { border-bottom-color: var(--accent); }
+  .gh-ico { width: 14px; height: 14px; fill: currentColor; vertical-align: -2px; margin-right: 5px; }
+  /* 자기 자신 주소(Page)는 화면에서는 숨기고 PDF에만 표시 */
+  .print-only { display: none; }
   .thesis { font-size: 14.5px; line-height: 1.72; color: var(--ink-2); max-width: 74ch; padding: 16px 18px; background: var(--card-2); border-left: 4px solid var(--line-2); border-radius: 6px; }
   .thesis strong { color: var(--ink); }
 
@@ -205,7 +208,8 @@
   }
   .co-name { font-size: 18px; font-weight: 700; color: var(--ink); }
   .co-per { font-family: "IBM Plex Mono", monospace; font-size: 13px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
-  .co-meta { font-size: 13px; font-weight: 500; color: var(--ink-3); margin-bottom: 14px; }
+  .co-meta { font-size: 13px; font-weight: 500; color: var(--ink-3); margin-bottom: 14px; line-height: 1.75; }
+  .co-k { display: inline-block; min-width: 68px; font-weight: 700; color: var(--ink-2); }
   .co-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
   .co-list li { font-size: 13.5px; line-height: 1.65; color: var(--ink-2); padding-left: 14px; position: relative; max-width: 84ch; }
   .co-list li::before { content: ""; position: absolute; left: 0; top: 9px; width: 4px; height: 4px; border-radius: 50%; background: var(--accent); }
@@ -328,7 +332,14 @@
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 
   /* ---------- 인쇄 · PDF (항상 라이트) ---------- */
+  .print-doc { display: none; }
   @media print {
+    .print-doc {
+      display: block; font-size: 24px; font-weight: 900; color: #0F172A;
+      letter-spacing: -.02em; border-bottom: 2px solid #1D4ED8;
+      padding-bottom: 10px; margin-bottom: 20px;
+    }
+    #p-career, #p-projects, #p-cases { break-before: page; }
     :root {
       color-scheme: light;
       --bg: #FFFFFF; --card: #FFFFFF; --card-2: #F8FAFC; --th: #F1F5F9;
@@ -340,9 +351,50 @@
     html, body { background: #fff; padding: 0; }
     .wrap { max-width: none; border: 0; border-radius: 0; box-shadow: none; padding: 0; }
     .tabbar, .theme-btn, .totop, .projnav { display: none !important; }
+    .print-only { display: flex; }
     [role="tabpanel"] { display: block !important; padding-top: 18px; }
     details { border: 0; background: none; } details[open] summary { display: none; }
-    .proj, .case, .axis, .tl-item, .scope-box, .stat { break-inside: avoid; }
+    /* 프로젝트 카드는 한 쪽보다 길어 카드 단위로 나눔 금지하면 큰 공백이 생김 →
+       카드 안의 작은 블록 단위로만 나눔을 피함. 카드 테두리는 쪽 경계에서 자연히 끊김 */
+    .proj { border: 0; border-radius: 0; margin-bottom: 30px; }
+    .proj-head, .meta-row, .work > li, .result, .det-body li,
+    .case, .axis, .tl-item, .flow, .stat, .arch-step, .stack-row, .co-list li { break-inside: avoid; }
+    /* 담당 범위 박스는 통째로 피하지 않고(제목만 남고 박스가 다음 쪽으로 밀림) 도식(.flow)만 보호 */
+    .scope-box { break-inside: auto; }
+    .proj-head, .sec-head, h3, h4, .print-doc, .scope-titles, .scope-lead { break-after: avoid; }
+    .sec-head, .co-top, .co-meta { break-inside: avoid; }
+    /* 인쇄 시 글자·여백 소폭 축소 (PDF 뷰어에서 확대해 보므로 가독성 영향 적음) */
+    body { font-size: 13.5px; line-height: 1.6; }
+    .work p, .co-list li, .star-v, .meta-v, .tl-row, .scope-lead, .thesis { font-size: 13px; }
+    .axis li, .tl-d, .result li, .scope-foot { font-size: 12.5px; }
+    .det-body li { font-size: 12px; }
+    .axis { padding: 14px 16px 15px; } .axis ul { gap: 7px; }
+    .stat { padding: 10px 12px; } .stat-n { font-size: 19px; }
+    .stack-k, .stack-v { padding: 9px 14px; }
+    .meta-k, .meta-v { padding: 8px 14px; }
+    .star-k, .star-v { padding: 9px 14px; }
+    .proj-head { padding: 14px 16px 12px; } .proj-body { padding: 14px 16px 16px; }
+    .work { gap: 12px; } .co-list { gap: 6px; }
+    .thesis { padding: 12px 14px; } .stats { margin-top: 16px; }
+    p, li, .arch-d, .flow-l { orphans: 3; widows: 3; }
+    .proj-head { border: 1px solid var(--line); border-radius: 8px 8px 0 0; }
+    .meta { border: 1px solid var(--line); border-top: 0; border-radius: 0 0 8px 8px; }
+    .work > li { padding-bottom: 2px; }
+    /* 인쇄 폭(A4 약 700px)은 화면용 가로 배치 기준(760·800px)보다 좁아 도식·아키텍처가 세로로 쌓임 → 강제로 가로 배치 */
+    .flow { grid-template-columns: 1fr auto 1.15fr auto 1fr; align-items: stretch; }
+    .flow-a { display: block; } .flow-a.v { grid-column: 3; } .flow-box.sub { grid-column: 3; }
+    .arch { grid-template-columns: 1fr auto 1fr auto 1fr; align-items: stretch; }
+    .arch-arrow { display: block; }
+    .stats { grid-template-columns: repeat(3, 1fr); }
+    /* 단락 간격 축소 */
+    section { margin-bottom: 26px; }
+    header { margin-bottom: 20px; padding-bottom: 16px; }
+    .sec-head { margin-bottom: 12px; }
+    .tl { margin-bottom: 0; } .tl-item { margin-bottom: 14px; }
+    .co { margin-bottom: 20px; }
+    .proj { margin-bottom: 22px; }
+    .case { margin-bottom: 12px; }
+    details { margin-top: 12px; } .result { margin-top: 12px; }
     a { text-decoration: none; }
     @page { size: A4; margin: 14mm 12mm; }
   }
@@ -360,10 +412,10 @@
   <div class="links">
     <div class="link-item">
       <span class="link-k">GitHub</span>
-      <a href="https://github.com/RockQoo" target="_blank" rel="noopener">github.com/RockQoo</a>
+      <a href="https://github.com/RockQoo" target="_blank" rel="noopener"><svg class="gh-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>github.com/RockQoo</a>
     </div>
-    <div class="link-item">
-      <span class="link-k">Page</span>
+    <div class="link-item print-only">
+      <span class="link-k">Web</span>
       <a href="https://rockqoo.github.io" target="_blank" rel="noopener">rockqoo.github.io</a>
     </div>
   </div>
@@ -396,6 +448,7 @@
 
 <!-- ================= 이력서 ================= -->
 <div role="tabpanel" id="p-resume" aria-labelledby="t-resume" tabindex="0">
+<div class="print-doc">이력서</div>
 
 <section>
   <div class="sec-head"><span class="sec-num">01</span><h2>경력 요약</h2></div>
@@ -423,28 +476,28 @@
   </div>
   <div class="tl" style="margin-bottom:0">
     <div class="tl-item">
-      <div class="tl-y">2022.07.18 — 재직 중 · 4년 2개월</div>
+      <div class="tl-y">2022.07 — 재직 중 · 4년 2개월</div>
       <div class="tl-t">엑스엘게임즈</div>
       <div class="tl-meta">
-        <div class="tl-row"><span class="tl-k">프로젝트</span><span>아키에이지 워 · 더 큐브, 세이브 어스</span></div>
+        <div class="tl-row"><span class="tl-k">프로젝트</span><span><span class="chip">아키에이지 워</span> <span class="chip">더 큐브, 세이브 어스</span></span></div>
         <div class="tl-row"><span class="tl-k">기술 스택</span><span>C++20 · C# · Golang · MSSQL · React · Blazor Server · UE4 / UE5 · Jenkins · Rundeck</span></div>
         <div class="tl-row"><span class="tl-k">담당 업무</span><span>서버 · 운영툴 · 클라이언트(보조) · 개발툴 · CI/CD</span></div>
       </div>
     </div>
     <div class="tl-item">
-      <div class="tl-y">2017.07.10 — 2022.04.18 · 4년 9개월</div>
+      <div class="tl-y">2017.07 — 2022.04 · 4년 9개월</div>
       <div class="tl-t">펄어비스</div>
       <div class="tl-meta">
-        <div class="tl-row"><span class="tl-k">프로젝트</span><span>검은사막 PC · 섀도우 아레나 — 파트장 겸임</span></div>
+        <div class="tl-row"><span class="tl-k">프로젝트</span><span><span class="chip">검은사막 PC</span> <span class="chip">섀도우 아레나</span> — 파트장 겸임</span></div>
         <div class="tl-row"><span class="tl-k">기술 스택</span><span>C++17 · MSSQL · MFC · Lua · 자체 엔진(DirectX 11 · 12)</span></div>
         <div class="tl-row"><span class="tl-k">담당 업무</span><span>서버 · 클라이언트 · 개발툴</span></div>
       </div>
     </div>
     <div class="tl-item">
-      <div class="tl-y">2014.01.06 — 2017.07.06 · 3년 6개월</div>
+      <div class="tl-y">2014.01 — 2017.07 · 3년 6개월</div>
       <div class="tl-t">웹젠</div>
       <div class="tl-meta">
-        <div class="tl-row"><span class="tl-k">프로젝트</span><span>메틴2</span></div>
+        <div class="tl-row"><span class="tl-k">프로젝트</span><span><span class="chip">메틴2</span></span></div>
         <div class="tl-row"><span class="tl-k">기술 스택</span><span>C++ · Python · MySQL · MFC · Lua · 자체 엔진(DirectX 6) · FreeBSD</span></div>
         <div class="tl-row"><span class="tl-k">담당 업무</span><span>서버 · 클라이언트 · 개발툴</span></div>
       </div>
@@ -484,7 +537,7 @@
       <ul>
         <li><b>서버 간 보상 트랜잭션</b> — 개인 재화(Zone)와 길드 재화(World)가 분산된 구조에서 "타 서버 처리는 항상 성공한다"는 가정을 제거하고, 타 서버 검증 실패 시 앞서 차감한 재화를 복구하는 보상 트랜잭션 구성</li>
         <li><b>DB 멱등성 선검증</b> — 서버 간 처리 순서를 역전시켜, 계정 데이터를 관리하는 서버가 멱등성을 먼저 검증하고 성공한 요청만 메모리에 반영</li>
-        <li><b>택배 아이템 미도착 장애 해결</b> — 서버 마차 AI에 의존하던 도착 처리를 시간 기반으로 바꿔 미도착 경로 자체를 제거, 연출은 클라이언트에서 유지</li>
+        <li><b>운송 아이템 미도착 장애 해결</b> — 서버 마차 AI에 의존하던 도착 처리를 시간 기반으로 바꿔 미도착 경로 자체를 제거, 연출은 클라이언트에서 유지</li>
       </ul>
     </div>
     <div class="axis">
@@ -571,7 +624,7 @@
   <div class="edu">
     <div><span class="edu-k">학력</span>동양대학교 전기전자공학과 학사 졸업 (2007.03 — 2013.02) · GPA 4.31 / 4.5</div>
     <div><span class="edu-k">병역</span>육군 병장 만기 전역 (2009.03 — 2011.01)</div>
-    <div><span class="edu-k">GitHub</span><a href="https://github.com/RockQoo" target="_blank" rel="noopener">github.com/RockQoo</a></div>
+    <div><span class="edu-k">GitHub</span><a href="https://github.com/RockQoo" target="_blank" rel="noopener"><svg class="gh-ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>github.com/RockQoo</a></div>
   </div>
   <p class="note">연락처는 지원서를 통해 확인하실 수 있습니다. · <a href="./doc.html">문서형 버전 보기</a></p>
 </footer>
@@ -579,6 +632,7 @@
 
 <!-- ================= 경력기술서 ================= -->
 <div role="tabpanel" id="p-career" aria-labelledby="t-career" tabindex="0" hidden>
+<div class="print-doc">경력기술서</div>
 <section>
   <div class="sec-head">
     <h2>경력 사항</h2>
@@ -588,9 +642,12 @@
   <div class="co">
     <div class="co-top">
       <div class="co-name">㈜엑스엘게임즈</div>
-      <div class="co-per">2022.07 — 재직 중 · 4년 2개월</div>
+      <div class="co-per">2022.07.18 — 재직 중 · 4년 2개월</div>
     </div>
-    <div class="co-meta">서버 개발 · 아키에이지 워, 더 큐브·세이브 어스</div>
+    <div class="co-meta">
+      <span class="co-k">프로젝트</span><span class="chip">아키에이지 워</span> <span class="chip">더 큐브, 세이브 어스</span><br>
+      <span class="co-k">담당 업무</span>서버 · 운영툴 · 클라이언트(보조) · 개발툴 · CI/CD
+    </div>
     <ul class="co-list">
       <li>MMORPG·MMO 익스트랙션 액션 장르 라이브 서비스의 게임 서버 개발 담당, 신규 프로젝트 2건의 개발·출시 참여</li>
       <li>콘텐츠 서버 설계·개발 → DB 처리 → 패킷·클라이언트 연동 → 웹 기반 운영툴 → 라이브 이슈 분석·핫픽스 → 빌드·배포 환경 개선까지, 하나의 기능이 서비스에 반영되는 전 구간을 한 사람이 맡아 처리</li>
@@ -605,9 +662,12 @@
   <div class="co">
     <div class="co-top">
       <div class="co-name">㈜펄어비스</div>
-      <div class="co-per">2017.07 — 2022.04 · 4년 9개월</div>
+      <div class="co-per">2017.07.10 — 2022.04.18 · 4년 9개월</div>
     </div>
-    <div class="co-meta">서버 · 클라이언트 개발 · 파트장 겸임 · 검은사막 PC, 섀도우 아레나</div>
+    <div class="co-meta">
+      <span class="co-k">프로젝트</span><span class="chip">검은사막 PC</span> <span class="chip">섀도우 아레나</span><br>
+      <span class="co-k">담당 업무</span>서버 · 클라이언트 · 개발툴 · 파트장 겸임
+    </div>
     <ul class="co-list">
       <li>MMORPG·배틀로얄 장르 라이브 서비스의 서버·클라이언트 개발 담당</li>
       <li>콘텐츠 1개를 맡으면 기획 검토·설계부터 DB·서버·클라이언트·UI까지 전 레이어를 혼자 개발하는 구조 — <b>담당한 콘텐츠가 곧 본인 R&amp;R</b>. 대양, 인스턴스 서버, 그림자 전장, 미니게임, 길드, 생활, 아이템, 퀘스트 등 다수 영역 담당</li>
@@ -623,9 +683,12 @@
   <div class="co">
     <div class="co-top">
       <div class="co-name">㈜웹젠</div>
-      <div class="co-per">2014.01 — 2017.07 · 3년 6개월</div>
+      <div class="co-per">2014.01.06 — 2017.07.06 · 3년 6개월</div>
     </div>
-    <div class="co-meta">서버 · 클라이언트 개발 · 메틴2</div>
+    <div class="co-meta">
+      <span class="co-k">프로젝트</span><span class="chip">메틴2</span><br>
+      <span class="co-k">담당 업무</span>서버 · 클라이언트 · 개발툴
+    </div>
     <ul class="co-list">
       <li>MMORPG 글로벌 라이브 서비스의 서버·클라이언트 개발 담당 — 거래소·아이템·PvP 등 주요 인게임 콘텐츠의 서버와 Python 클라이언트를 함께 개발</li>
       <li>퍼블리셔 요청에 따른 SSO 기반 통합 인증 시스템·런처, 기획팀용 개발툴, FreeBSD 기반 해외 테스트 서버 구축·운영, 빌드·배포 담당</li>
@@ -636,42 +699,11 @@
   </div>
 </section>
 
-<section>
-  <div class="sec-head">
-    <h2>DB · 운영 · 글로벌 대응</h2>
-    <p class="sec-sub">단순 기능 구현보다 장애 예방, 데이터 정합성, 운영 리스크 차단에 초점을 맞춰 작업했습니다. 세 회사에 걸쳐 반복된 역할입니다.</p>
-  </div>
-  <div class="axes">
-    <div class="axis">
-      <h3>라이브 데이터 보정</h3>
-      <ul><li>부정 획득, 환불, 귀속 오류 등 민감한 데이터 이상 상황에서 연관 테이블과 아이템 이동 경로를 분석하고 보정 쿼리를 작성했습니다. 증상 처리에 그치지 않고 관련 테이블 전체를 함께 처리해 정합성을 유지했습니다.</li></ul>
-    </div>
-    <div class="axis">
-      <h3>대량 데이터 일괄 저장</h3>
-      <ul><li>이벤트 진행도와 강화 결과를 메모리에 누적한 뒤 한 번에 저장하는 구조로 반복 DB 접근을 줄였고, 저장 임계값을 설정으로 분리해 운영 중 조정이 가능하게 했습니다.</li></ul>
-    </div>
-    <div class="axis">
-      <h3>운영 로그 조회 도구</h3>
-      <ul><li>로그 타입마다 의미가 다른 공용 필드를 의미 있는 컬럼과 표시 형식으로 변환해 운영자가 raw 로그를 직접 해석해야 하는 부담을 줄였습니다. 신규 로그 타입 추가 시 화면 개발이 불필요합니다.</li></ul>
-    </div>
-    <div class="axis">
-      <h3>운영 리스크 사전 차단</h3>
-      <ul><li>요청받은 기능 구현에 그치지 않고 거래소 등록 아이템 차단, 인게임 아이템 사용 금지 등 운영 리스크를 사전에 막는 기능을 직접 제안·설계·개발했습니다. 반복 운영 업무는 운영툴 기능으로 전환해 운영 조직이 직접 처리하도록 했습니다.</li></ul>
-    </div>
-    <div class="axis">
-      <h3>글로벌 다국어 대응</h3>
-      <ul><li>다국어 데이터 키 기반 보상 구조, 태국어 결합 문자, 아랍어 양방향 텍스트 처리, DB 병합(서버 통합), 카카오 SDK 연동 등 글로벌 서비스 이슈를 해결했습니다.</li></ul>
-    </div>
-    <div class="axis">
-      <h3>서버 처리 원칙 정립</h3>
-      <ul><li>메모리 사전 검증 → DB 반영 → 로그 기록 → 서버 메모리 반영 → 클라이언트 응답 순서를 원칙으로 정립하고 주니어 개발자에게 전파했습니다. DB 반영 후 메모리 적용에 실패하면 연결을 종료하고 DB에서 재로드해 상태 불일치를 방지합니다.</li></ul>
-    </div>
-  </div>
-</section>
 </div>
 
 <!-- ================= 프로젝트 상세 ================= -->
 <div role="tabpanel" id="p-projects" aria-labelledby="t-projects" tabindex="0" hidden>
+<div class="print-doc">프로젝트 상세</div>
 <section>
   <div class="sec-head">
     <h2>프로젝트 상세</h2>
@@ -725,7 +757,7 @@
         <li><span class="wt">글로벌 런칭 대응 및 서버 통합(DB 병합)</span>
           <p>서버 콘텐츠와 운영툴 영역의 글로벌 런칭 대응을 담당해 우편·점검·공지·이벤트 등 DB에 저장되는 문자열 콘텐츠를 전수 조사하고 다국어를 적용했습니다. 서로 다른 서버의 별개 DB를 하나로 합치는 <b>서버 통합</b> 작업에서 테이블 단위 병합 방식과 식별자 충돌 처리, 콘텐츠 관점의 병합 기준을 함께 설계했습니다. 이 외에 유저 언어 코드 캐싱, 카카오 SDK 3.0·4.0 대응, 로그 영문화, 운영툴 다국어 번역 추출·적용 구조를 구현했습니다.</p></li>
         <li><span class="wt">CI/CD 운영 및 AI 기반 통합 관리 체계 구축</span>
-          <p>Jenkins·Rundeck·Jira·Confluence를 <b>API로 연동해 AI 자동화로 분석·관리하는 체계</b>를 구성했습니다. 빌드·배포 상태 확인과 장애 원인 분석, 이슈·문서 연계를 자동화해 <b>반복 확인에 쓰던 시간을 단축</b>했습니다. DEV·STAGE·QA 등 여러 브랜치 환경의 설정·스케줄·에이전트 구성을 운영하며, 콘솔 로그·설정 이력·REST API 실측 데이터를 교차 검증해 빌드 성공 판정 오탐, 패치 산출물 누락, 모바일 빌드 메모리·엔진 한계, 배포 토큰 만료, 로그 유실 가능성 같은 문제를 구조적 원인까지 추적했습니다.</p></li>
+          <p>Jenkins·Rundeck·Jira·Confluence를 <b>API로 연동해 AI 자동화로 분석·관리하는 체계</b>를 구성했습니다. 빌드·배포 상태 확인과 장애 원인 분석, 이슈·문서 연계를 자동화해 <b>반복 확인에 쓰던 시간을 단축</b>했습니다. DEV·STAGE·QA 등 여러 브랜치 환경의 설정·스케줄·에이전트 구성을 운영하며, 콘솔 로그·설정 이력·REST API 실측 데이터를 교차 검증해 빌드 성공 판정 오탐, 패치 산출물 누락, 모바일 빌드 메모리 부족, 배포 토큰 만료, 로그 유실 가능성 같은 문제를 구조적 원인까지 추적했습니다.</p></li>
         <li>
           <span class="wt">AI 기반 설정 변경의 안전장치 설계</span>
           <p>AI 에이전트가 API로 빌드 시스템 설정을 직접 수정하는 구조였기 때문에, 잘못된 변경이 빌드 환경을 훼손하지 않도록 <b>변경 규칙을 직접 설계해 적용</b>했습니다. 변경 전 <b>최신 상태를 다시 확인</b>해 오래된 기준으로 덮어쓰는 것을 막고, <b>다른 경로에서 발생한 동시 변경을 감지</b>하도록 했습니다. 변경 내역을 검토할 때 <b>민감 정보가 노출되지 않게</b> 처리했고, <b>백업 후 적용해 실패 시 자동 롤백</b>되도록 구성했으며 모든 변경에 <b>감사 기록</b>을 남겼습니다. AI에 쓰기 권한을 주면서도 빌드 환경의 안전성을 지키는 것이 목표였습니다.</p></li>
@@ -758,7 +790,7 @@
 
   <article class="proj" id="p2">
     <div class="proj-head">
-      <div class="badges"><span class="badge on">출시 경험</span><span class="badge on">1인 전담 개발</span><span class="badge">운영툴 아키텍처</span></div>
+      <div class="badges"><span class="badge on">출시 경험</span><span class="badge on">운영툴 메인 개발</span><span class="badge">운영툴 아키텍처</span></div>
       <h3 class="proj-name">더 큐브, 세이브 어스</h3>
       <div class="proj-en">The Cube, Save us · 2025.05 — 2026.05</div>
     </div>
@@ -766,7 +798,7 @@
       <div class="meta-row"><div class="meta-k">장르 / 플랫폼</div><div class="meta-v">MMO 익스트랙션 액션 · PC</div></div>
       <div class="meta-row"><div class="meta-k">기술 스택</div><div class="meta-v"><code>C++20 · C# · Blazor Server · MSSQL · UE5</code></div></div>
       <div class="meta-row"><div class="meta-k">서버 구성</div><div class="meta-v">로그인 · 관리 · 룸 서버 계층</div></div>
-      <div class="meta-row"><div class="meta-k">합류 시점</div><div class="meta-v">스팀 페스타 출시 약 5~6개월 전 합류 → 출시까지 수행</div></div>
+      <div class="meta-row"><div class="meta-k">합류 시점</div><div class="meta-v">스팀 페스타 출시 약 6개월 전 합류 → 출시까지 수행</div></div>
       <div class="meta-row"><div class="meta-k">담당 R&amp;R</div><div class="meta-v"><b>운영툴 전체 시스템 1인 설계·개발</b>, 운영 대상 인게임 콘텐츠 서버 개발</div></div>
       <div class="meta-row"><div class="meta-k">협업 범위</div><div class="meta-v">배포·환경 연동만 동료 개발자·인프라팀과 협업</div></div>
     </div>
@@ -784,7 +816,7 @@
         <li><span class="wt">우편 발송 및 로그 조회 시스템</span>
           <p>전체 발송, CSV 기반 다중 대상 발송, 예약 발송 및 취소를 개발했습니다. 예약 우편은 대기 상태로 저장한 뒤 관리 서버가 발송 시간 도래 시 실행하고, 전체 유저 우편은 계정별 사전 생성 없이 공용 우편 1건만 등록해 접속 시 수령 여부를 확인하도록 구현해 대량 DB 쓰기를 방지했습니다. 로그 조회는 OpenSearch 파이프라인 위에서 복합 조건 필터를 제공하고, 로그 타입마다 의미가 다른 공용 파라미터 필드를 타입별로 2차 가공해 의미 있는 컬럼으로 변환했습니다. 신규 로그 타입 추가 시 별도 화면 구현이 불필요하도록 설계했습니다.</p></li>
         <li><span class="wt">권한 체계 및 다중 환경 관리</span>
-          <p>콘텐츠별 권한 단계를 <b>선언적으로 정의</b>하고 뷰 레이어에서 페이지 접근·버튼·입력 폼 활성화를 자동 처리하는 RBAC를 구현했습니다. 권한 검사를 각 화면에서 반복 작성하지 않고 공통 계층에서 처리하도록 해, 신규 화면을 추가할 때 권한 누락이 생기지 않는 구조로 만들었습니다. 모든 운영 작업은 작업자·시간·대상·기능·처리 결과 단위로 감사 로그에 자동 기록됩니다. 환경별 DB 접속 정보는 설정 파일로 분리해, <b>동일 바이너리를 전 리전에 배포</b>하고 선택한 환경에 따라 요청 단위로 연결 대상을 전환하도록 구성했습니다.</p></li>
+          <p>콘텐츠별 권한 단계를 <b>선언적으로 정의</b>하고 뷰 레이어에서 페이지 접근·버튼·입력 폼 활성화를 자동 처리하는 RBAC를 구현했습니다. 권한 검사를 각 화면에서 반복 작성하지 않고 공통 계층에서 처리하도록 해, 신규 화면을 추가할 때 권한 누락이 생기지 않는 구조로 만들었습니다. 모든 운영 작업은 작업자·시간·대상·기능·처리 결과 단위로 감사 로그에 자동 기록됩니다. 환경별 DB 접속 정보는 설정 파일로 분리해, <b>환경마다 운영툴을 따로 만들지 않고 하나의 빌드로 모든 환경을 다루며</b> 선택한 환경에 따라 요청 단위로 연결 대상을 전환하도록 구성했습니다. 신규 환경은 설정 추가만으로 확장됩니다.</p></li>
       </ul>
       <details>
         <summary>그 외 담당 업무 4건</summary>
@@ -830,8 +862,8 @@
           <p>검은사막은 채널 방식(칼페온-1, 칼페온-2 …)의 단일 월드 구조였고, 특정 지역에 유저가 몰리는 문제가 있었습니다. 해당 지역만 인스턴스 서버로 분리해 멀티 지역으로 운용하는 구조를 도입했으며, 월드 서버 2개 병렬 운용 컨셉에서 출발해 섹터 크기 축소 → 맵 데이터 로딩 → 서버 간 캐릭터 이동 → 인스턴스 전용 오브젝트 추가 → 복귀 처리 순으로 단계적으로 구현했습니다. 메모리 프로파일링으로 서버당 배포 가능한 인스턴스 수를 <b>약 100개</b>로 직접 측정해 배포 규모를 결정했고, 특정 길드 보스 소환 시 해당 인스턴스로 진입해 전투할 수 있도록 처리했습니다. 기획팀이 개발팀 지원 없이 인스턴스 맵을 구성할 수 있도록 MFC 기반 섹터 복사 툴을 개발·배포했습니다.</p></li>
         <li><span class="wt">대양 무역 — 시드 기반 데이터 동기화</span>
           <p>대양 지형은 있으나 콘텐츠가 전무한 상황에서 개발자 4인 중 메인으로 참여해 물물교환 기반 대양 무역을 설계·구현했습니다. 섬마다 교역 아이템이 다르고 유저별로도 다른 목록을 보유해야 하는 개인화 구조였습니다. <b>유저마다 시드를 미리 만들어 DB에 보관하면 수천 명분의 시드를 관리하는 부하가 생기고, 목록을 매번 전송하면 네트워크 부담이 커집니다.</b> 그래서 저장도 전송도 하지 않고 <b>재현</b>하는 방식으로 접근했습니다. 서버는 유저별 마지막 갱신 시간만 보관하고, 클라이언트가 접속하면 그 시간을 받아 갱신 시점이 지났을 때만 서버에 새 시드를 요청합니다. 이후 양쪽이 동일한 난수 함수와 시드로 같은 시퀀스를 생성해 교역 아이템의 종류와 수량을 각자 계산합니다. 해류·해풍은 비트맵 컬러 코드값을 수치로 매핑해 기획팀이 이미지 편집만으로 환경을 조정할 수 있게 했습니다.</p></li>
-        <li><span class="wt">창고 무역(택배) 시스템 개편 — 아이템 미도착 장애 해결</span>
-          <p>기존에는 네비게이션 정보가 서버에 있고 실제 운송 마차 AI가 A마을에서 B마을까지 이동해 도착 시점에 창고 아이템을 전달하는 구조였는데, 마차 AI가 고장나면 택배 허브에서 아이템이 도착하지 않는 장애가 발생했습니다. 유저에게 보이는 연출은 유지하되 서버의 실제 이동 처리를 제거하고, 마을 간 거리로 소요 시간을 산출해 도착 시간과 현재 시간의 비율로 진행도를 계산하며 클라이언트 로컬에만 보이는 마차를 표시하도록 변경했습니다. 시간 만료 시 아이템이 창고로 이동합니다. 장애를 해결하는 동시에 서버 AI의 주기적 경로 연산도 제거했습니다.</p></li>
+        <li><span class="wt">창고 운송 시스템 개편 — 아이템 미도착 장애 해결</span>
+          <p>기존에는 네비게이션 정보가 서버에 있고 실제 운송 마차 AI가 A마을에서 B마을까지 이동해 도착 시점에 창고 아이템을 전달하는 구조였는데, 마차 AI가 고장나면 목적지 창고에 아이템이 도착하지 않는 장애가 발생했습니다. 유저에게 보이는 연출은 유지하되 서버의 실제 이동 처리를 제거하고, 마을 간 거리로 소요 시간을 산출해 도착 시간과 현재 시간의 비율로 진행도를 계산하며 클라이언트 로컬에만 보이는 마차를 표시하도록 변경했습니다. 시간 만료 시 아이템이 창고로 이동합니다. 장애를 해결하는 동시에 서버 AI의 주기적 경로 연산도 제거했습니다.</p></li>
         <li><span class="wt">그림자 전장(배틀로얄) 개발</span>
           <p>MMORPG 구조 위에 배틀로얄 규칙을 얹어야 했기 때문에, <b>인게임 상태와 전장 상태의 완전한 격리</b>가 핵심 설계였습니다. 아이템·클래스·스킬은 모두 DB를 원본으로 삼는 구조인데 전장에서는 그 전제가 성립하지 않습니다. 전장 진입 시 캐릭터 상태를 스냅샷으로 보존하고 전장 내 변경사항은 메모리에서만 처리한 뒤, 퇴장 시 원래 클래스·장비·상태로 완전 복원해 DB 정합성을 유지했습니다. 검은사막은 캐릭터 생성 시 클래스가 고정되지만, 전장에서는 <b>필드에 배치된 오브젝트와 인터랙션하면 해당 클래스로 전환</b>되어 그 클래스의 스킬을 쓸 수 있게 구현했습니다. 전장에서 허용할 스킬을 별도 제한하고 대미지 계수·쿨타임을 독립 값으로 동작시키되, <b>기존 스킬 시스템을 건드리지 않고 전장 컨텍스트에서만 오버라이드</b>되는 구조로 만들었습니다.</p></li>
         <li><span class="wt">Xbox 콘솔 컨버팅</span>
@@ -839,7 +871,7 @@
         <li><span class="wt">글로벌 로컬라이즈 및 개발툴</span>
           <p>태국어는 앞뒤 글자 조합으로 새 글자가 생성되는 특성 때문에 입력 순서 기반 렌더링을 문자 조합 단위 처리로 변경했고(FreeType), 아랍어는 RTL 문자열 방향과 숫자·영문 LTR 유지가 혼합된 양방향 처리를 HarfBuzz 기반으로 자체 엔진 렌더링 파이프라인에 구현했습니다. 대미지 비표시 정책 때문에 밸런스 검증이 어려운 문제는, 계산 전 과정을 <code>{단계명, 입력값, 출력값, 적용 계수}</code> 형태로 기록해 트리 구조로 시각화하고 콤보 N회 반복 평균값을 제공하는 대미지 분석 툴로 해결해 QA팀·기획팀에 배포했습니다.</p></li>
         <li><span class="wt">파트장 겸임 및 라이브 대응</span>
-          <p>콘텐츠 개발과 병행해 파트장 역할을 겸임하며 파트원 약 3명의 작업 배분, 구현 방향 결정, 코드 리뷰, 문제 해결 지원을 담당했습니다. 주니어 개발자에게는 <b>메모리 사전 검증 → DB 반영 → 로그 기록 → 서버 메모리 반영 → 클라이언트 응답</b> 순서의 서버 처리 원칙과, DB 반영 후 메모리 적용에 실패하면 연결을 종료하고 DB에서 상태를 재로드해 불일치를 방지하는 방식을 전달했습니다. 게임 구조 이해도를 바탕으로 팀의 이슈 대응·데이터 보정 쿼리를 도맡아 작성해 전달했고, 유저 피드백을 하루 안에 취합·개발·배포하는 사이클을 반복했습니다.</p></li>
+          <p>콘텐츠 개발과 병행해 파트장 역할을 겸임하며 파트원 약 3명의 작업 배분, 구현 방향 결정, 코드 리뷰, 문제 해결 지원을 담당했습니다. 파트원에게는 <b>메모리 사전 검증 → DB 반영 → 로그 기록 → 서버 메모리 반영 → 클라이언트 응답</b> 순서의 서버 처리 원칙과, DB 반영 후 메모리 적용에 실패하면 연결을 종료하고 DB에서 상태를 재로드해 불일치를 방지하는 방식을 전달했습니다. 게임 구조 이해도를 바탕으로 팀의 이슈 대응·데이터 보정 쿼리를 도맡아 작성해 전달했고, 유저 피드백을 하루 안에 취합·개발·배포하는 사이클을 반복했습니다.</p></li>
       </ul>
       <details>
         <summary>그 외 담당 업무 6건</summary>
@@ -858,7 +890,7 @@
         <ul>
           <li>혼잡 지역을 인스턴스로 다중화해 특정 지역 과밀 완화, 서버당 약 100개 운영 규모 산정</li>
           <li>전체 교역 목록 전송 없이 유저별 개인화 데이터 동기화 (네트워크 전송량 제거)</li>
-          <li>택배 아이템 미도착 장애 해결 + 서버 AI 주기 연산 제거 (연출은 동일 유지)</li>
+          <li>운송 아이템 미도착 장애 해결 + 서버 AI 주기 연산 제거 (연출은 동일 유지)</li>
           <li>메모리 부족으로 인한 Xbox 크래시 이슈 완화</li>
           <li>MFC 섹터 복사 툴로 기획팀이 인스턴스 맵을 독립 구성 → 개발팀의 맵 구성 지원 작업 감소</li>
           <li>대미지 분석 툴이 콤보 반복 평균값을 제공해 QA·밸런스팀이 수치로 비교 가능</li>
@@ -898,7 +930,7 @@
         <div class="det-body"><ul>
           <li><b>독립 데이터 / 실행 구조 구성</b> — 검은사막 의존을 제거한 독립 실행 구조 및 데이터 구성</li>
           <li><b>대회 시스템 · 라이벌 시스템</b> — 시즌 콘텐츠 부가 기능</li>
-          <li><b>주니어 개발자 코드 리뷰</b> — 함께 개발한 주니어의 코드 리뷰, 구현 방향 및 문제 수정 방식 가이드</li>
+          <li><b>팀원 코드 리뷰</b> — 함께 개발한 팀원의 코드 리뷰, 구현 방향 및 문제 수정 방식 가이드</li>
         </ul></div>
       </details>
       <div class="result">
@@ -922,7 +954,7 @@
       <div class="meta-row"><div class="meta-k">장르 / 플랫폼</div><div class="meta-v">MMORPG · PC · 글로벌 서비스 (한국 · 중국 · 브라질 등)</div></div>
       <div class="meta-row"><div class="meta-k">기술 스택</div><div class="meta-v"><code>C++ · Python · Lua · MySQL · FreeBSD · FinalBuilder</code></div></div>
       <div class="meta-row"><div class="meta-k">서버 구성</div><div class="meta-v">인증 · 게임 · DB 서버 / <b>싱글스레드 게임 서버</b></div></div>
-      <div class="meta-row"><div class="meta-k">팀 규모</div><div class="meta-v">프로그래머 약 4명</div></div>
+      <div class="meta-row"><div class="meta-k">팀 규모</div><div class="meta-v">프로그래머 4명</div></div>
       <div class="meta-row"><div class="meta-k">프로젝트 성격</div><div class="meta-v">이미 글로벌 서비스 중인 타이틀의 라이브 개발팀</div></div>
     </div>
     <div class="proj-body">
@@ -964,6 +996,7 @@
 
 <!-- ================= 문제 해결 사례 ================= -->
 <div role="tabpanel" id="p-cases" aria-labelledby="t-cases" tabindex="0" hidden>
+<div class="print-doc">문제 해결 사례</div>
 <section>
   <div class="sec-head">
     <h2>대표 문제 해결 사례</h2>
@@ -1029,11 +1062,11 @@
   <article class="case">
     <div class="case-head">
       <div class="case-kw">서버 권위 유지 · 연출과 로직 분리</div>
-      <h3 class="case-t">서버 권위는 유지하고 연출만 클라이언트로 — 택배 장애 해결</h3>
+      <h3 class="case-t">서버 권위는 유지하고 연출만 클라이언트로 — 운송 장애 해결</h3>
     </div>
     <div class="star">
-      <div class="star-row"><div class="star-k">상황</div><div class="star-v">검은사막의 창고 무역(택배) 시스템. A마을 창고 아이템을 B마을 창고로 옮기는 기능입니다.</div></div>
-      <div class="star-row"><div class="star-k">문제</div><div class="star-v">네비게이션 정보가 서버에 있고 실제 운송 마차 AI가 마을 간을 이동해 도착 시점에 아이템을 전달하는 구조여서, 마차 AI가 고장나면 택배 허브에서 아이템이 도착하지 않는 장애가 발생했습니다.</div></div>
+      <div class="star-row"><div class="star-k">상황</div><div class="star-v">검은사막의 창고 운송 시스템. A마을 창고 아이템을 B마을 창고로 옮기는 기능입니다.</div></div>
+      <div class="star-row"><div class="star-k">문제</div><div class="star-v">네비게이션 정보가 서버에 있고 실제 운송 마차 AI가 마을 간을 이동해 도착 시점에 아이템을 전달하는 구조여서, 마차 AI가 고장나면 목적지 창고에 아이템이 도착하지 않는 장애가 발생했습니다.</div></div>
       <div class="star-row"><div class="star-k">역할</div><div class="star-v">원인을 분석하고 구조를 재설계했습니다.</div></div>
       <div class="star-row"><div class="star-k">해결</div><div class="star-v">유저에게 보이는 연출은 유지하되 서버의 실제 이동 처리를 제거했습니다. 마을 간 거리로 소요 시간을 산출하고 도착 시간과 현재 시간의 비율로 진행도를 계산해 클라이언트 로컬에만 보이는 마차를 표시하고, 시간이 만료되면 서버가 아이템을 창고로 이동시키도록 변경했습니다. 아이템 이동 판정 자체는 서버가 유지합니다.</div></div>
       <div class="star-row"><div class="star-k">결과</div><div class="star-v"><b>아이템 미도착 장애를 해결하면서 서버 AI의 주기적 경로 연산도 함께 제거했습니다. 유저 체감 연출은 기존과 동일하게 유지했습니다.</b></div></div>
@@ -1128,6 +1161,20 @@
     var next = root.getAttribute('data-t') === 'dark' ? 'light' : 'dark';
     apply(next);
     try { localStorage.setItem('rq-theme', next); } catch (e) {}
+  });
+
+  /* ---- 인쇄 시 접힌 '그 외 담당 업무' 자동 펼침, 인쇄 후 원상 복구 ---- */
+  var openedForPrint = [];
+  window.addEventListener('beforeprint', function () {
+    openedForPrint = [];
+    document.querySelectorAll('details:not([open])').forEach(function (d) {
+      openedForPrint.push(d);
+      d.open = true;
+    });
+  });
+  window.addEventListener('afterprint', function () {
+    openedForPrint.forEach(function (d) { d.open = false; });
+    openedForPrint = [];
   });
 
   /* ---- 맨 위로 ---- */
