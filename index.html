@@ -407,7 +407,7 @@
 <header>
   <div class="eyebrow">Game Server Programmer</div>
   <h1>박규나</h1>
-  <div class="role">C++ 기반 MMORPG 서버 개발 · 12년 5개월</div>
+  <div class="role">C++ 기반 MMORPG 서버 개발 · 12년차</div>
 
   <div class="links">
     <div class="link-item">
@@ -428,7 +428,6 @@
     문제의 원인이 있는 레이어를 직접 따라가 해결합니다.
   </p>
   <div class="stats">
-    <div class="stat"><div class="stat-n">12년 5개월</div><div class="stat-l">게임 서버 개발 경력</div></div>
     <div class="stat"><div class="stat-n">5</div><div class="stat-l">상용 프로젝트</div></div>
     <div class="stat"><div class="stat-n">3</div><div class="stat-l">신규 프로젝트 출시</div></div>
     <div class="stat"><div class="stat-n">35+</div><div class="stat-l">담당 콘텐츠 · 시스템</div></div>
@@ -464,7 +463,7 @@
   </p>
   <p>
     펄어비스에서는 두 프로젝트에서 파트장을 겸임하며 파트원 약 3명을 관리했고,
-    검은사막 인게임 콘텐츠를 독립 게임으로 분리하는 프로젝트에서 4인 팀의 개발 리드를 맡아
+    검은사막 인게임 콘텐츠를 독립 게임으로 분리하는 프로젝트에서 팀의 개발 리드를 맡아
     CBT·OBT를 거쳐 얼리 액세스 출시까지 이끌었습니다.
   </p>
 </section>
@@ -611,9 +610,9 @@
   <div class="stack">
     <div class="stack-row"><div class="stack-k">Language</div><div class="stack-v">C/C++ (C++17 / C++20) · C# · Go · Lua · Python</div></div>
     <div class="stack-row"><div class="stack-k">Server</div><div class="stack-v">분산 World/Zone/공용 서버 · 인스턴스 서버 · 싱글스레드 게임 서버 · 멀티스레드 · TCP/UDP · 커스텀 이진 프로토콜 · IDL 패킷 자동 생성</div></div>
-    <div class="stack-row"><div class="stack-k">Database</div><div class="stack-v">MSSQL · MySQL · 저장 프로시저 · TVP 일괄 저장 · DB 병합 · 라이브 데이터 보정</div></div>
-    <div class="stack-row"><div class="stack-k">Web / Tools</div><div class="stack-v">Blazor Server · ASP.NET Core · React · Dapper · RBAC · 감사 로그 · OpenSearch</div></div>
-    <div class="stack-row"><div class="stack-k">Engine / Client</div><div class="stack-v">Unreal Engine 4 · 5 · 자체 엔진 · Python 클라이언트 · MFC</div></div>
+    <div class="stack-row"><div class="stack-k">Database</div><div class="stack-v">MSSQL · MySQL · Stored Procedure · TVP 일괄 저장 · 트랜잭션 · 멱등성</div></div>
+    <div class="stack-row"><div class="stack-k">Web / Tools</div><div class="stack-v">Blazor Server · ASP.NET Core · React · Dapper · RBAC(역할 기반 접근 제어) · History Log · OpenSearch</div></div>
+    <div class="stack-row"><div class="stack-k">Engine / Client</div><div class="stack-v">Unreal Engine 4 · 5 · 자체 엔진 · MFC</div></div>
     <div class="stack-row"><div class="stack-k">DevOps</div><div class="stack-v">Jenkins · Rundeck · Jira · Confluence · GitLab · Git · SVN · AWS</div></div>
     <div class="stack-row"><div class="stack-k">Environment</div><div class="stack-v">Windows · FreeBSD</div></div>
     <div class="stack-row"><div class="stack-k">Global</div><div class="stack-v">다국어 CMS · HarfBuzz · FreeType · RTL/LTR 양방향 텍스트 · 카카오 SDK 3.0 · 4.0</div></div>
@@ -816,7 +815,7 @@
         <li><span class="wt">우편 발송 및 로그 조회 시스템</span>
           <p>전체 발송, CSV 기반 다중 대상 발송, 예약 발송 및 취소를 개발했습니다. 예약 우편은 대기 상태로 저장한 뒤 관리 서버가 발송 시간 도래 시 실행하고, 전체 유저 우편은 계정별 사전 생성 없이 공용 우편 1건만 등록해 접속 시 수령 여부를 확인하도록 구현해 대량 DB 쓰기를 방지했습니다. 로그 조회는 OpenSearch 파이프라인 위에서 복합 조건 필터를 제공하고, 로그 타입마다 의미가 다른 공용 파라미터 필드를 타입별로 2차 가공해 의미 있는 컬럼으로 변환했습니다. 신규 로그 타입 추가 시 별도 화면 구현이 불필요하도록 설계했습니다.</p></li>
         <li><span class="wt">권한 체계 및 다중 환경 관리</span>
-          <p>콘텐츠별 권한 단계를 <b>선언적으로 정의</b>하고 뷰 레이어에서 페이지 접근·버튼·입력 폼 활성화를 자동 처리하는 RBAC를 구현했습니다. 권한 검사를 각 화면에서 반복 작성하지 않고 공통 계층에서 처리하도록 해, 신규 화면을 추가할 때 권한 누락이 생기지 않는 구조로 만들었습니다. 모든 운영 작업은 작업자·시간·대상·기능·처리 결과 단위로 감사 로그에 자동 기록됩니다. 환경별 DB 접속 정보는 설정 파일로 분리해, <b>환경마다 운영툴을 따로 만들지 않고 하나의 빌드로 모든 환경을 다루며</b> 선택한 환경에 따라 요청 단위로 연결 대상을 전환하도록 구성했습니다. 신규 환경은 설정 추가만으로 확장됩니다.</p></li>
+          <p>콘텐츠별 권한 단계를 <b>선언적으로 정의</b>하고 뷰 레이어에서 페이지 접근·버튼·입력 폼 활성화를 자동 처리하는 RBAC를 구현했습니다. 권한 검사를 각 화면에서 반복 작성하지 않고 공통 계층에서 처리하도록 해, 신규 화면을 추가할 때 권한 누락이 생기지 않는 구조로 만들었습니다. 모든 운영 작업은 작업자·시간·대상·기능·처리 결과 단위로 History Log에 자동 기록됩니다. 환경별 DB 접속 정보는 설정 파일로 분리해, <b>환경마다 운영툴을 따로 만들지 않고 하나의 빌드로 모든 환경을 다루며</b> 선택한 환경에 따라 요청 단위로 연결 대상을 전환하도록 구성했습니다. 신규 환경은 설정 추가만으로 확장됩니다.</p></li>
       </ul>
       <details>
         <summary>그 외 담당 업무 4건</summary>
