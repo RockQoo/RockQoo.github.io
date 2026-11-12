@@ -1,0 +1,5 @@
+# GitHub Pages 설정. 작업용 문서가 사이트에 공개되지 않도록 제외한다.
+exclude:
+  - CLAUDE.md
+  - STATUS.md
+  - README.md
