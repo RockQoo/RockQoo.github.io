@@ -1,6 +1,6 @@
 # RockQoo.github.io
 
-이력서 사이트. https://rockqoo.github.io 로 공개되는 **공개 저장소**다(GitHub Pages, `main` 브랜치 루트).
+이력서 사이트. https://RockQoo.github.io 로 공개되는 **공개 저장소**다(GitHub Pages, `main` 브랜치 루트).
 
 ## 구성
 
