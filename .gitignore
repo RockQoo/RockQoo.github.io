@@ -2,3 +2,8 @@ index_*.html
 *_changes.md
 *.pdf
 STATUS.md
+
+# QA (로컬 전용)
+QA-LOG.md
+PERF-LOG.md
+.qa/

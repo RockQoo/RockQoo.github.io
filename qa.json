@@ -1,0 +1,7 @@
+{
+  "name": "RockQoo.github.io",
+  "commands": [],
+  "serve": { "dir": ".", "base": "/" },
+  "pages": [{ "name": "resume", "path": "" }],
+  "ignoreErrors": ["favicon[.]ico"]
+}
