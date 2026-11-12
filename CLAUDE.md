@@ -9,6 +9,7 @@
 | `index.html` | 이력서 본문. 이력서, 경력기술서, 프로젝트, 문제 해결 사례, AI 활용을 탭으로 나눈 한 페이지. 인쇄(Ctrl+P)하면 A4 PDF가 된다 |
 | `_config.yml` | Pages 빌드에서 CLAUDE.md, STATUS.md, README.md를 제외한다. **지우지 않는다** |
 | `README.md` | GitHub 저장소 첫 화면용 소개 |
+| `STATUS.md` | 작업 상태. **로컬 전용**(`.gitignore`). 공개 저장소에 올리지 않는다 |
 
 ## 규칙
 
